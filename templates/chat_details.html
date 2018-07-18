@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block title %} Index {% endblock %}
+
+{% block side %}
+<div class="row row-user">
+  <div class="col-2"><i class="fa fa-user-circle font-weight-bold"> </i></div>
+  <div class="col-10"><span class="font-weight-bold"> {{nickname}} <a href="/logout" class="link m-2"><i class="fa fa-times"></i></a> <span></div>
+</div>
+<div class="row">
+  <div class="col-9"><h5>Channels</h5></div>
+  <div class="col-3"><i class="fa fa-plus-circle" data-toggle="modal" data-target="#modalNewChannel"></i></div>
+</div>
+<div class="col-12">
+  <ul id="channel_list" class="list-group">
+    {% for channel in channels%}
+    <li><a href="/chat-details/{{channel}}" class="list-item">{{channel}}</a></li>
+    {% endfor%}
+  </ul>
+</div>
+<div class="row">
+  <div class="col-9"><h5>Direct Messages</h5></div>
+  <div class="col-3"><i class="fa fa-plus-circle"></i></div>
+</div>
+<div class="col-12">
+  <ul class="list-group">
+    <li><a href="#" class="list-item">Admins</a></li>
+  </ul>
+</div>
+{% endblock %}
+{% block main %}
+
+
+<div class="row chat-row" >
+<div class="col-11">
+  <div class="col-12">
+    <span  class="font-weight-bold black" style="color: #2c2d30;">Juan </span >
+  </div>
+  <div class="col-9">
+  </div>
+</div>
+</div>
+
+<div class="row chat-list">
+  <div class="row chat-row" >
+    <div class="col-12">
+      <div class="col-12">
+        <span  class="font-weight-bold black" style="color: #2c2d30;">Juan </span > <span style="color:#717274;
+        font-size: 11px;">6:21 am</span>
+      </div>
+      <div class="col-12">
+        y tb puse una variable global que se va cambiando de true a false segun se abran o cierren los popus manualmente y cuando hace back pregunto si esa variable esta en true le llamo al listener, si esta en false va atras
+      </div>
+    </div>
+  </div>
+
+  <div class="row chat-row" >
+    <div class="col-12">
+      <div class="col-12">
+        <span  class="font-weight-bold black" style="color: #2c2d30;">Juan </span > <span style="color:#717274;
+        font-size: 11px;">6:21 am</span>
+      </div>
+      <div class="col-12">
+        y tb puse una variable global que se va cambiando de true a false segun se abran o cierren los popus manualmente y cuando hace back pregunto si esa variable esta en true le llamo al listener, si esta en false va atras
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row col-12 form-chat">
+  <div class="col-12">
+       <label class="sr-only" for="inlineFormInputGroup">Username</label>
+       <div class="input-group mb-2">
+         <div class="input-group-prepend">
+           <div class="input-group-text">+</div>
+         </div>
+         <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Message.." style="width="100%"">
+       </div>
+     </div>
+</div>
+
+
+{% endblock %}
