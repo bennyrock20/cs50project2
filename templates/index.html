@@ -3,7 +3,7 @@
 {% block side %}
 <div class="row row-user">
   <div class="col-2"><i class="fa fa-user-circle font-weight-bold"> </i></div>
-  <div class="col-10"><span class="font-weight-bold"> {{nickname}} <a href="/logout" class="link m-2"><i class="fa fa-times"></i></a> <span></div>
+  <div class="col-10"><span class="font-weight-bold"> <span id="nickname"> {{nickname}} </span><a href="/logout" class="link m-2"><i class="fa fa-times"></i></a> <span></div>
 </div>
 <div class="row">
   <div class="col-9"><h5>Channels</h5></div>
@@ -25,6 +25,9 @@
     <li><a href="#" class="list-item">Admins</a></li>
   </ul>
 </div>
+
+
+
 {% endblock %}
 {% block main %}
 

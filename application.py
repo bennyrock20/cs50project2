@@ -5,8 +5,10 @@ from flask_socketio import SocketIO, emit
 from flask_session import Session
 from chat import Chat
 from channel import Channel
+from message import Message
 import pickle
 import json
+from flask_restplus import fields, marshal
 
 
 app = Flask(__name__)
@@ -21,17 +23,48 @@ app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
 
+channel_list =[]
+messages = []
 
 @app.route("/")
 def index():
     if session.get('logged_in') != True:
         return redirect(url_for("login"))
-    if session.get('channel_list') ==  None:
-        session['channel_list'] = []
-    return render_template("index.html", nickname =  session.get('nickname'), channels= session.get('channel_list'))
+    return render_template("index.html", nickname =  session.get('nickname'), channels= channel_list)
+
+@app.route("/chat-details/<string:channel_name>")
+def chat_details(channel_name):
+    """Load messages from chat"""
+    if channel_name in channel_list:
+        return render_template("chat_details.html", nickname =  session.get('nickname'), channels= channel_list, current_channel= channel_name,messages= messages)
+    return redirect(url_for("index"))
+
+@socketio.on('add-channel')
+def add_channel(data):
+    """ Add Channel to Channel List"""
+    channel_name =  data["channel_name"]
+    if channel_name != None:
+        channel_list.append(channel_name);
+    emit("added-new-channel", {"channel_list": channel_list }, broadcast=True)
+    return redirect(url_for("index"))
+
+@socketio.on('send-message')
+def add_channel(data):
+    """ Add Channel to Channel List"""
+    message = data["message"]
+    channel = data["channel"]
+    nickname = data["nickname"]
+    if channel != None and message != None and nickname != None:
+        message = Message(nickname = nickname , channel = channel, message = message)
+        resource_fields = {'nickname': fields.String, "channel": fields.String, "message": fields.String}
+        messages.append(marshal(message,resource_fields))
+        emit("new-message", {"messages": messages }, broadcast=True)
+    return redirect(url_for("index"))
+
 
 @app.route("/login",methods=['post','get'])
 def login():
+    """Register a Username to enter to the Rooms"""
     if session.get('logged_in') == True:
         return redirect(url_for("index"))
     if request.method == 'POST':
@@ -44,35 +77,8 @@ def login():
 
 @app.route("/logout")
 def logout():
+    """Remove Username and exit"""
     if session.get('logged_in') == True:
             session['logged_in'] = False
             session['nickname'] = "Anonimus"
     return redirect(url_for("index"))
-
-@app.route("/add-channel", methods=['post'])
-def add_channel():
-    """ Add Channel to Channel List"""
-    if request.method == 'POST':
-        if session.get('channel_list') == None:
-            session['channel_list'] = []
-
-        channel_list = session.get('channel_list')
-        channel_name =  request.form.get("channel_name")
-        if channel_name != None:
-            channel_list.append(channel_name);
-            session['channel_list'] = channel_list
-            #emit("added new channel", {"channel_list": session.get('channel_list') }, broadcast=True)
-        else:
-            print("Ingrese un valor")
-
-    return redirect(url_for("index"))
-
-
-@app.route("/chat-details/<string:channel_name>")
-def chat_details(channel_name):
-    """Load messages from chat"""
-    return render_template("chat_details.html", nickname =  session.get('nickname'), channels= session.get('channel_list'))
-
-def print_(value):
-        print("_________________________________*******_______________________________")
-        print(value)

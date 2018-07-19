@@ -7,33 +7,26 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('connect', () => {
 
         //  emit a "add channel" event
-        /*document.querySelector('#addChannel').onclick = () => {
+        document.querySelector('#addChannel').onclick = () => {
             var channel_name = document.querySelector('#channel_name').value;
             if (channel_name) {
-                socket.emit('add a channel', {'channel_name': [channel_name]});
+                socket.emit('add-channel', {'channel_name': channel_name});
             } else {
                 alert("Please Insert a Name");
             }
-        };*/
+        };
 
-
-        // When a new vote is announced, add to the unordered list
-        socket.on('added new channel', data => {
+        // When a new Channel is added
+        socket.on('added-new-channel', data => {
+            console.log(data);
             const li = document.createElement('li');
-            data.channel_list.forEach(function (channel) {
+            const items = data.channel_list;
+            items.forEach(function (channel) {
                 li.innerHTML = "<a href='/chat-details/"+ channel + "'>"+channel+"</a>";
                 document.querySelector('#channel_list').append(li);
             });
 
-            $('#modalNewChannel').modal('toggle')
+            $('#modalNewChannel').modal('hide')
         });
     });
-
-
-
-
-
-
-
-
 });

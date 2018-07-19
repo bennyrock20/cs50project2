@@ -29,29 +29,18 @@
 {% endblock %}
 {% block main %}
 
-
 <div class="row chat-row" >
-<div class="col-11">
-  <div class="col-12">
-    <span  class="font-weight-bold black" style="color: #2c2d30;">Juan </span >
-  </div>
-  <div class="col-9">
-  </div>
-</div>
-</div>
-
-<div class="row chat-list">
-  <div class="row chat-row" >
+  <div class="col-11">
     <div class="col-12">
-      <div class="col-12">
-        <span  class="font-weight-bold black" style="color: #2c2d30;">Juan </span > <span style="color:#717274;
-        font-size: 11px;">6:21 am</span>
-      </div>
-      <div class="col-12">
-        y tb puse una variable global que se va cambiando de true a false segun se abran o cierren los popus manualmente y cuando hace back pregunto si esa variable esta en true le llamo al listener, si esta en false va atras
-      </div>
+      <span  class="font-weight-bold black" style="color: #2c2d30;">Juan </span >
+    </div>
+    <div class="col-9">
     </div>
   </div>
+</div>
+
+<div id="chat-list" class="row chat-list">
+
 
   <div class="row chat-row" >
     <div class="col-12">
@@ -64,6 +53,8 @@
       </div>
     </div>
   </div>
+
+
 </div>
 
 <div class="row col-12 form-chat">
@@ -73,10 +64,65 @@
          <div class="input-group-prepend">
            <div class="input-group-text">+</div>
          </div>
-         <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Message.." style="width="100%"">
+         <input id="message" type="text" class="form-control mr-2" id="inlineFormInputGroup" placeholder="Message.." style="width:70%"/>
+         <input id="channel" type="hidden" value="{{current_channel}}" />
+         <input id="nickname" type="hidden" value="{{nickname}}" />
+         <input id="button-send-message" type="button" class="btn btn-primary" value="Submit"/>
        </div>
      </div>
 </div>
 
 
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // Connect to websocket
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+    // When connected, configure buttons
+    socket.on('connect', () => {
+
+        // Emmit a Send Message
+         document.querySelector('#button-send-message').onclick = () => {
+
+          var nickname = document.querySelector('#nickname').value;
+          var message = document.querySelector('#message').value;
+          var channel = document.querySelector('#channel').value;
+
+          if (nickname && message && channel) {
+              socket.emit('send-message', {'nickname': nickname, 'message': message, "channel": channel});
+          } else {
+              alert("Please write a message");
+          }
+        };
+
+        // When a new Channel is added
+        socket.on('new-message', data => {
+
+            data.messages.forEach(function (message) {
+              //console.log(data.messages);
+              const div = document.createElement('div');
+              div.className ="row";
+              div.innerHTML = '<div class="col-12"> \
+                <div class="col-12"> \
+                  <span  class="font-weight-bold black" style="color: #2c2d30;">Juan </span > <span style="color:#717274; \
+                  font-size: 11px;">6:21 am</span>\
+                </div> \
+                <div class="col-12">\
+                 ${message} \
+                </div>\
+              </div>';
+              document.querySelector('#chat-list').append(div);
+            });
+
+
+        });
+
+    });
+});
+
+</script>
 {% endblock %}
