@@ -24,7 +24,15 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 channel_list =[]
+
+channel_list.append("Default");
+channel_list.append("Private");
+channel_list.append("Public");
+
 messages = []
+
+resource_fields = {'nickname': fields.String, "channel": fields.String, "message": fields.String, "date": fields.Date, "hours": fields.String}
+
 
 @app.route("/")
 def index():
@@ -36,7 +44,7 @@ def index():
 def chat_details(channel_name):
     """Load messages from chat"""
     if channel_name in channel_list:
-        return render_template("chat_details.html", nickname =  session.get('nickname'), channels= channel_list, current_channel= channel_name,messages= messages)
+        return render_template("chat_details.html", nickname =  session.get('nickname'), channels= channel_list, current_channel= channel_name,messages= get_messsages_by_channel(channel_name))
     return redirect(url_for("index"))
 
 @socketio.on('add-channel')
@@ -49,16 +57,15 @@ def add_channel(data):
     return redirect(url_for("index"))
 
 @socketio.on('send-message')
-def add_channel(data):
+def send_message(data):
     """ Add Channel to Channel List"""
     message = data["message"]
     channel = data["channel"]
     nickname = data["nickname"]
     if channel != None and message != None and nickname != None:
         message = Message(nickname = nickname , channel = channel, message = message)
-        resource_fields = {'nickname': fields.String, "channel": fields.String, "message": fields.String}
-        messages.append(marshal(message,resource_fields))
-        emit("new-message", {"messages": messages }, broadcast=True)
+        messages.append(message)
+        emit("new-message", {"message": marshal(message,resource_fields) }, broadcast=True)
     return redirect(url_for("index"))
 
 
@@ -82,3 +89,11 @@ def logout():
             session['logged_in'] = False
             session['nickname'] = "Anonimus"
     return redirect(url_for("index"))
+
+def get_messsages_by_channel(channel_name):
+    new_messsage = []
+    for message in messages:
+        print(message.nickname)
+        if message.channel == channel_name:
+            new_messsage.append(marshal(message,resource_fields))
+    return new_messsage

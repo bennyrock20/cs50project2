@@ -1,5 +1,17 @@
 {% extends "layout.html" %}
 {% block title %} Index {% endblock %}
+{% block style %}
+<style type="text/css">
+.nickname{
+color: #2c2d30;
+font-weight: bold;
+}
+.hours{
+  color:#717274;
+  font-size: 11px;
+}
+</style>
+ {% endblock %}
 
 {% block side %}
 <div class="row row-user">
@@ -7,7 +19,7 @@
   <div class="col-10"><span class="font-weight-bold"> {{nickname}} <a href="/logout" class="link m-2"><i class="fa fa-times"></i></a> <span></div>
 </div>
 <div class="row">
-  <div class="col-9"><h5>Channels</h5></div>
+  <div class="col-9"><h5 class="title">Channels</h5></div>
   <div class="col-3"><i class="fa fa-plus-circle" data-toggle="modal" data-target="#modalNewChannel"></i></div>
 </div>
 <div class="col-12">
@@ -17,44 +29,32 @@
     {% endfor%}
   </ul>
 </div>
-<div class="row">
-  <div class="col-9"><h5>Direct Messages</h5></div>
-  <div class="col-3"><i class="fa fa-plus-circle"></i></div>
-</div>
-<div class="col-12">
-  <ul class="list-group">
-    <li><a href="#" class="list-item">Admins</a></li>
-  </ul>
-</div>
 {% endblock %}
 {% block main %}
 
-<div class="row chat-row" >
+<div class="row chat-header" >
   <div class="col-11">
     <div class="col-12">
-      <span  class="font-weight-bold black" style="color: #2c2d30;">Juan </span >
+      <span  class="font-weight-bold black" style="color: #2c2d30;">{{current_channel}} </span >
     </div>
     <div class="col-9">
     </div>
   </div>
 </div>
 
-<div id="chat-list" class="row chat-list">
-
-
-  <div class="row chat-row" >
-    <div class="col-12">
+<div id="chat-list" class="chat-list">
+  {% for message in messages%}
+    <div class="row chat-row" >
       <div class="col-12">
-        <span  class="font-weight-bold black" style="color: #2c2d30;">Juan </span > <span style="color:#717274;
-        font-size: 11px;">6:21 am</span>
-      </div>
-      <div class="col-12">
-        y tb puse una variable global que se va cambiando de true a false segun se abran o cierren los popus manualmente y cuando hace back pregunto si esa variable esta en true le llamo al listener, si esta en false va atras
+        <div class="col-12">
+          <span  class="nickname">{{message.nickname}}</span > <span class="hours">{{message.hours}}</span>
+        </div>
+        <div class="col-12">
+          {{ message.message}}
+        </div>
       </div>
     </div>
-  </div>
-
-
+    {% endfor %}
 </div>
 
 <div class="row col-12 form-chat">
@@ -64,7 +64,7 @@
          <div class="input-group-prepend">
            <div class="input-group-text">+</div>
          </div>
-         <input id="message" type="text" class="form-control mr-2" id="inlineFormInputGroup" placeholder="Message.." style="width:70%"/>
+         <input id="message" type="text" class="form-control mr-2" id="inlineFormInputGroup" placeholder="Message.." autocomplete="off" style="width:70%"/>
          <input id="channel" type="hidden" value="{{current_channel}}" />
          <input id="nickname" type="hidden" value="{{nickname}}" />
          <input id="button-send-message" type="button" class="btn btn-primary" value="Submit"/>
@@ -93,6 +93,7 @@
           var channel = document.querySelector('#channel').value;
 
           if (nickname && message && channel) {
+              document.querySelector('#message').value = "";
               socket.emit('send-message', {'nickname': nickname, 'message': message, "channel": channel});
           } else {
               alert("Please write a message");
@@ -101,26 +102,28 @@
 
         // When a new Channel is added
         socket.on('new-message', data => {
-
-            data.messages.forEach(function (message) {
+           if(data){
+             var message = data.message;
               //console.log(data.messages);
               const div = document.createElement('div');
-              div.className ="row";
-              div.innerHTML = '<div class="col-12"> \
-                <div class="col-12"> \
-                  <span  class="font-weight-bold black" style="color: #2c2d30;">Juan </span > <span style="color:#717274; \
-                  font-size: 11px;">6:21 am</span>\
-                </div> \
-                <div class="col-12">\
-                 ${message} \
-                </div>\
-              </div>';
+              div.className ="row chat-row";
+              var html = `
+                <div class="row chat-row" >
+                  <div class="col-12">
+                    <div class="col-12">
+                      <span  class="nickname">${message.nickname}</span > <span class="hours">${message.hours}</span>
+                    </div>
+                    <div class="col-12">
+                      ${message.message}
+                    </div>
+                  </div>
+                </div>
+              `;
+
+              div.innerHTML = html;
               document.querySelector('#chat-list').append(div);
-            });
-
-
+            }
         });
-
     });
 });
 

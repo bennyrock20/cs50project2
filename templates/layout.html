@@ -17,7 +17,7 @@
   <div class="container-fluid" style="height: 100%">
   {% block body %}
     <div class="row" style="height:100%">
-        <div  class="col-3" style="background:#F8F8FA;">
+        <div  class="col-3" style="background:#F8F8FA; overflow: scroll !important;">
           {% block side %}{% endblock %}
         </div>
         <div  class="col-9">
@@ -37,7 +37,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <input type="text" id="channel_name" name="channel_name"  required class="form-control"/>
+          <input type="text" id="channel_name" name="channel_name" autocomplete="off"  required class="form-control"/>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

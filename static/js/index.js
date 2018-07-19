@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#addChannel').onclick = () => {
             var channel_name = document.querySelector('#channel_name').value;
             if (channel_name) {
+              document.querySelector('#channel_name').value = "";
                 socket.emit('add-channel', {'channel_name': channel_name});
             } else {
                 alert("Please Insert a Name");
