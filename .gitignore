@@ -1,3 +1,4 @@
 /nbproject/private/
 flask_session/*
 __pycache__/*
+nbproject/*
