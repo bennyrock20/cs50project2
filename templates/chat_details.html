@@ -104,7 +104,7 @@ font-weight: bold;
           }
         };
 
-        // When a new Channel is added
+        // When a new Message is received
         socket.on('new-message', data => {
            if(data){
              var message = data.message;
@@ -123,13 +123,11 @@ font-weight: bold;
                   </div>
                 </div>
               `;
-
               div.innerHTML = html;
               document.querySelector('#chat-list').append(div);
             }
         });
     });
 });
-
 </script>
 {% endblock %}

@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // When connected, configure buttons
     socket.on('connect', () => {
-
         //  emit a "add channel" event
         document.querySelector('#addChannel').onclick = () => {
             var channel_name = document.querySelector('#channel_name').value;
@@ -26,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 li.innerHTML = "<a href='/chat-details/"+ channel + "'>"+channel+"</a>";
                 document.querySelector('#channel_list').append(li);
             });
-
             $('#modalNewChannel').modal('hide')
         });
     });
@@ -35,7 +33,4 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('redirected', 1);
         window.location.href = "http://127.0.0.1:5000/chat-details/" + localStorage.getItem('current_channel');
     }
-
-
-
 });

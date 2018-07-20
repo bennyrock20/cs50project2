@@ -68,7 +68,6 @@ def send_message(data):
         emit("new-message", {"message": marshal(message,resource_fields) }, broadcast=True)
     return redirect(url_for("index"))
 
-
 @app.route("/login",methods=['post','get'])
 def login():
     """Register a Username to enter to the Rooms"""
