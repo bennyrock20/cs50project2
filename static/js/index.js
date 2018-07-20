@@ -30,4 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
             $('#modalNewChannel').modal('hide')
         });
     });
+
+    if (localStorage.getItem('current_channel') != "" && !sessionStorage.getItem('redirected')){
+        sessionStorage.setItem('redirected', 1);
+        window.location.href = "http://127.0.0.1:5000/chat-details/" + localStorage.getItem('current_channel');
+    }
+
+
+
 });

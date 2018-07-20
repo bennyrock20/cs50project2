@@ -77,7 +77,11 @@ font-weight: bold;
 
 {% block javascript %}
 <script type="text/javascript">
+
   document.addEventListener('DOMContentLoaded', () => {
+
+   //alert({{current_channel}});
+   localStorage.setItem('current_channel', '{{current_channel}}');
 
     // Connect to websocket
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
