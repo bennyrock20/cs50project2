@@ -3,8 +3,6 @@ import os
 from flask import Flask, render_template,session,redirect,url_for,request,jsonify
 from flask_socketio import SocketIO, emit
 from flask_session import Session
-from chat import Chat
-from channel import Channel
 from message import Message
 import pickle
 import json
@@ -65,7 +63,7 @@ def send_message(data):
     if channel != None and message != None and nickname != None:
         message = Message(nickname = nickname , channel = channel, message = message)
         messages.append(message)
-        emit("new-message", {"message": marshal(message,resource_fields) }, broadcast=True)
+        emit("new-message-" + channel, {"message": marshal(message,resource_fields) }, broadcast=True)
     return redirect(url_for("index"))
 
 @app.route("/login",methods=['post','get'])

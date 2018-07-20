@@ -80,6 +80,9 @@ font-weight: bold;
 
   document.addEventListener('DOMContentLoaded', () => {
 
+    const objDiv = document.querySelector('#chat-list');
+    objDiv.scrollTop = objDiv.scrollHeight;
+
    //alert({{current_channel}});
    localStorage.setItem('current_channel', '{{current_channel}}');
 
@@ -104,8 +107,15 @@ font-weight: bold;
           }
         };
 
+        document.querySelector('#message').addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                document.querySelector('#button-send-message').onclick();
+            }
+        });
+
+
         // When a new Message is received
-        socket.on('new-message', data => {
+        socket.on('new-message-{{current_channel}}', data => {
            if(data){
              var message = data.message;
               //console.log(data.messages);
@@ -125,6 +135,8 @@ font-weight: bold;
               `;
               div.innerHTML = html;
               document.querySelector('#chat-list').append(div);
+              const objDiv = document.querySelector('#chat-list');
+              objDiv.scrollTop = objDiv.scrollHeight;
             }
         });
     });
