@@ -70,16 +70,11 @@ font-weight: bold;
          <input id="message" type="text" class="form-control mr-2" id="inlineFormInputGroup" placeholder="Message.." autocomplete="off" style="width:70%"/>
          <input id="channel" type="hidden" value="{{current_channel}}" />
          <input id="nickname" type="hidden" value="{{nickname}}" />
+         <input id='file' type='file' name='filename' hidden/>
          <input id="button-send-message" type="button" class="btn btn-primary" value="Submit"/>
-
        </div>
-       <form id='form-file' action="#" method="POST" enctype="multipart/form-data">
-            <input id='file' type='file' name='filename' hidden/>
-        </form>
     </div>
 </div>
-
-
 {% endblock %}
 
 {% block javascript %}
@@ -87,8 +82,15 @@ font-weight: bold;
 
   document.addEventListener('DOMContentLoaded', () => {
 
-    const objDiv = document.querySelector('#chat-list');
-    objDiv.scrollTop = objDiv.scrollHeight;
+   let chat_list = document.querySelector('#chat-list');
+   let nickname = document.querySelector('#nickname');
+   let message = document.querySelector('#message');
+   let channel = document.querySelector('#channel');
+   let file_input = document.querySelector('#file');
+   let attachment= document.querySelector('#attachment');
+   let button_send_message = document.querySelector('#button-send-message')
+
+   chat_list.scrollTop = chat_list.scrollHeight;
 
    //alert({{current_channel}});
    localStorage.setItem('current_channel', '{{current_channel}}');
@@ -98,14 +100,6 @@ font-weight: bold;
 
     // When connected, configure buttons
     socket.on('connect', () => {
-
-      let nickname = document.querySelector('#nickname');
-      let message = document.querySelector('#message');
-      let channel = document.querySelector('#channel');
-      let file_input = document.querySelector('#file');
-      let attachment= document.querySelector('#attachment');
-      let chat_list = document.querySelector('#chat-list');
-      let button_send_message = document.querySelector('#button-send-message')
 
         // Emmit a Send Message
          button_send_message.onclick = () => {
@@ -122,7 +116,7 @@ font-weight: bold;
                 button_send_message.onclick();
             }
         });
-        
+
         attachment.onclick = () => {
           file_input.click();
         };
