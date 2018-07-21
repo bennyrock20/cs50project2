@@ -49,5 +49,9 @@ ul.list-group {
   background: #f3f3f9;
   border-radius: 14px;
   margin: 6px 0;
-  
+
+}
+.file{
+  max-width: 200px;
+  height="auto"
 }

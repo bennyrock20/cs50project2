@@ -51,6 +51,9 @@ font-weight: bold;
         </div>
         <div class="col-12">
           {{ message.message}}
+          {% if message.filename %}
+           <img  class="file"src="{{ message.filename }}"  />
+          {% endif %}
         </div>
       </div>
     </div>
@@ -62,14 +65,18 @@ font-weight: bold;
        <label class="sr-only" for="inlineFormInputGroup">Username</label>
        <div class="input-group mb-2">
          <div class="input-group-prepend">
-           <div class="input-group-text">+</div>
+           <div class="input-group-text"><i id="attachment" class="fa fa-paperclip" onclick="showFileSelector();"></i></div>
          </div>
          <input id="message" type="text" class="form-control mr-2" id="inlineFormInputGroup" placeholder="Message.." autocomplete="off" style="width:70%"/>
          <input id="channel" type="hidden" value="{{current_channel}}" />
          <input id="nickname" type="hidden" value="{{nickname}}" />
          <input id="button-send-message" type="button" class="btn btn-primary" value="Submit"/>
+
        </div>
-     </div>
+       <form id='form-file' action="#" method="POST" enctype="multipart/form-data">
+            <input id='file' type='file' name='filename' hidden/>
+        </form>
+    </div>
 </div>
 
 
@@ -92,27 +99,57 @@ font-weight: bold;
     // When connected, configure buttons
     socket.on('connect', () => {
 
+      let nickname = document.querySelector('#nickname');
+      let message = document.querySelector('#message');
+      let channel = document.querySelector('#channel');
+      let file_input = document.querySelector('#file');
+      let attachment= document.querySelector('#attachment');
+      let chat_list = document.querySelector('#chat-list');
+      let button_send_message = document.querySelector('#button-send-message')
+
         // Emmit a Send Message
-         document.querySelector('#button-send-message').onclick = () => {
-
-          var nickname = document.querySelector('#nickname').value;
-          var message = document.querySelector('#message').value;
-          var channel = document.querySelector('#channel').value;
-
-          if (nickname && message && channel) {
-              document.querySelector('#message').value = "";
-              socket.emit('send-message', {'nickname': nickname, 'message': message, "channel": channel});
-          } else {
-              alert("Please write a message");
-          }
+         button_send_message.onclick = () => {
+            if (nickname && message && channel) {
+                socket.emit('send-message', {'nickname': nickname.value, 'message': message.value, "channel": channel.value, "filename": ""});
+                message.value = "";
+            } else {
+                alert("Please write a message");
+            }
         };
 
-        document.querySelector('#message').addEventListener("keyup", function(event) {
+        message.addEventListener("keyup", function(event) {
             if (event.keyCode === 13) {
-                document.querySelector('#button-send-message').onclick();
+                button_send_message.onclick();
             }
         });
+        
+        attachment.onclick = () => {
+          file_input.click();
+        };
 
+        file_input.onchange = (event) => {
+          var formData = new FormData();
+
+          formData.append("afile", file_input.files[0]);
+
+          var req = new XMLHttpRequest();
+          req.open('POST', 'http://127.0.0.1:5000/upload-file', true);
+
+          req.onreadystatechange = function (aEvt) {
+            if(req.readyState === XMLHttpRequest.DONE){
+              var response = JSON.parse(this.responseText);
+              if(req.status === 200) {
+                if(response.filename){
+                  socket.emit('send-message', {'nickname': nickname.value, 'message': message.value, "channel": channel.value, "filename": response.filename});
+                  message.value = "";
+                }
+              }else{
+                alert(response.error);
+              }
+            }
+          };
+          req.send(formData);
+        };
 
         // When a new Message is received
         socket.on('new-message-{{current_channel}}', data => {
@@ -121,22 +158,24 @@ font-weight: bold;
               //console.log(data.messages);
               const div = document.createElement('div');
               div.className ="row chat-row";
-              var html = `
+              let html = `
                 <div class="row chat-row" >
                   <div class="col-12">
                     <div class="col-12">
                       <span  class="nickname">${message.nickname}</span > <span class="hours">${message.hours}</span>
                     </div>
                     <div class="col-12">
-                      ${message.message}
-                    </div>
+                      ${message.message} `;
+                      if(message.filename){
+                          html += `<img class="file" src="${message.filename}" />`;
+                      }
+                  html += `</div>
                   </div>
                 </div>
               `;
               div.innerHTML = html;
-              document.querySelector('#chat-list').append(div);
-              const objDiv = document.querySelector('#chat-list');
-              objDiv.scrollTop = objDiv.scrollHeight;
+              chat_list.append(div);
+              chat_list.scrollTop = chat_list.scrollHeight;
             }
         });
     });
